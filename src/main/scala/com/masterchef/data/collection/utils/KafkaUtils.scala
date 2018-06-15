@@ -2,12 +2,14 @@ package com.masterchef.data.collection.utils
 
 import java.util.Properties
 
+import com.masterchef.data.collection.models.MessageType
+import com.masterchef.data.collection.models.MessageType.MessageType
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 
 object KafkaUtils {
-  private lazy val topic = ConfigProvider.getKafkaTopic
+  private lazy val trafficTopic = ConfigProvider.getTrafficKafkaTopic
+  private lazy val bookingTopic = ConfigProvider.getBookingKafkaTopic
   private lazy val brokers = ConfigProvider.getKafkaBrokers
-  private lazy val producer = new KafkaProducer[String, String](getProperties)
 
   private def getProperties: Properties = {
     val props = new Properties()
@@ -18,9 +20,16 @@ object KafkaUtils {
     props
   }
 
-  def pushToKafka(messages: List[String]): Unit = {
+  def pushToKafka(messages: List[String], msgType:MessageType): Unit = {
+    val producer = new KafkaProducer[String, String](getProperties)
+
+    val targetTopic = msgType match {
+      case MessageType.TRAFFIC => trafficTopic
+      case MessageType.BOOKING => bookingTopic
+    }
+
     val records = messages.map { msg =>
-      new ProducerRecord[String, String](topic, msg)
+      new ProducerRecord[String, String](targetTopic, msg)
     }
 
     records.foreach(data => producer.send(data))

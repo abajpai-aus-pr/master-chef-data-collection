@@ -10,7 +10,7 @@ object MockDataProvider {
   private lazy val trafficResponse: List[TrafficMessage] = {
     println("Calling Traffic Response")
     val trafficUrl = ConfigProvider.getTrafficEndpoint
-    var response = FormatterUtils.getCastedHttpResponse[TrafficMessage](trafficUrl)
+    val response = FormatterUtils.getCastedHttpResponse[TrafficMessage](trafficUrl)
     response
   }
 

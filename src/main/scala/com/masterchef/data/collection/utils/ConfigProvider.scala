@@ -16,11 +16,15 @@ object ConfigProvider {
     apiConfig.getString("booking")
   }
 
-  def getKafkaBrokers:Array[String] = {
-    kafkaConfig.getStringList("brokers").asScala.toArray
+  def getKafkaBrokers:String = {
+    kafkaConfig.getString("brokers")
   }
 
-  def getKafkaTopic:String = {
-    kafkaConfig.getString("topic")
+  def getTrafficKafkaTopic:String = {
+    kafkaConfig.getString("topic.traffic")
+  }
+
+  def getBookingKafkaTopic:String = {
+    kafkaConfig.getString("topic.booking")
   }
 }
