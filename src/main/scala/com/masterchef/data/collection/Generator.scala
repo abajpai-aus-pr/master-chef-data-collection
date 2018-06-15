@@ -2,8 +2,9 @@ package com.masterchef.data.collection
 
 import com.masterchef.data.collection.models.MessageType
 import com.masterchef.data.collection.utils.{KafkaUtils, MockDataProvider}
+import com.typesafe.scalalogging.LazyLogging
 
-object Generator extends App {
+object Generator extends App with LazyLogging{
   generateTraffic
     //    val trafficData = List("""{"message":{"uid":"3e91ac73-0630-4663-a360-1bc8ec668009","origin":"au","language":"zh","ipv4":"205.24.67.246","device":"mob","browser":"ie","os":"and","guest":false},"logTime":1529038954058}""",
     //      """{"message":{"uid":"b47af07e-8ba3-44a3-adf8-89ce3192d7bd","origin":"uk","language":"fr","ipv4":"53.207.150.151","device":"tab","browser":"ie","os":"and","guest":true},"logTime":1529038954058}""",
@@ -18,15 +19,19 @@ object Generator extends App {
 //    """{"message":{"id":"4589361884","value":3676.889892578125,"currency":"BGN","mode":"pp","city":"mel","hotel":"accord","room":"delux","guid":"58007cda-1804-444e-a07e-5d18eefab468"},"logTime":1529041066858}""",
 //    """{"message":{"id":"8610518434","value":1403.6500244140625,"currency":"CZK","mode":"dc","city":"bkk","hotel":"accord","room":"dorm","guid":"72e825c9-3296-4607-ab41-0c21c0f9e0e6"},"logTime":1529041066858}""")
 
-  def generateTraffic = {
+  def generateTraffic = try {
     val trafficData = MockDataProvider.getTrafficData
     trafficData.foreach(println(_))
     KafkaUtils.pushToKafka(trafficData,MessageType.TRAFFIC)
+  } catch {
+    case ex:Exception => logger.error(s"Generator: generateTraffic: Error Occurred: ${ex.getMessage}",ex)
   }
 
-  def generateBooking={
+  def generateBooking= try {
     val bookingData = MockDataProvider.getBookingData
     bookingData.foreach(println(_))
     KafkaUtils.pushToKafka(bookingData,MessageType.BOOKING)
+  } catch {
+    case ex:Exception => logger.error(s"Generator: generateBooking: Error Occurred: ${ex.getMessage}",ex)
   }
 }
